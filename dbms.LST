@@ -1,0 +1,910 @@
+SQL> create table person(
+  2  ssn number(10),
+  3  name varchar2(20),
+  4  phone number(10),
+  5  email varchar2(20),
+  6  address varchar2(50));
+
+Table created.
+
+SQL> desc person;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SSN                                                NUMBER(10)
+ NAME                                               VARCHAR2(20)
+ PHONE                                              NUMBER(10)
+ EMAIL                                              VARCHAR2(20)
+ ADDRESS                                            VARCHAR2(50)
+
+SQL> create table income_info(
+  2  ssn number(10),
+  3  year number(4),
+  4  salary number(10),
+  5  bonus number(10),
+  6  interest number(10));
+
+Table created.
+
+SQL> desc income_info;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SSN                                                NUMBER(10)
+ YEAR                                               NUMBER(4)
+ SALARY                                             NUMBER(10)
+ BONUS                                              NUMBER(10)
+ INTEREST                                           NUMBER(10)
+
+SQL> create table tax_payment(
+  2  
+SQL> 
+SQL> alter table person add constraint pk_ssn primary key(ssn);
+
+Table altered.
+
+SQL> alter table income_info add foreign key(ssn) references person;
+
+Table altered.
+
+SQL> create table tax_payment(
+  2  ssn number(10),
+  3  year number(4),
+  4  amount number(10),
+  5  foreign key(ssn) references person,
+  6  foreign key(year) references income_info);
+foreign key(year) references income_info)
+                             *
+ERROR at line 6:
+ORA-02268: referenced table does not have a primary key 
+
+
+SQL> alter table income_info add constraint pk_inc primary key(ssn);
+
+Table altered.
+
+SQL> create table tax_payment(
+  2  ssn number(10),
+  3  year number(4),
+  4  amount number(10),
+  5  foreign key(ssn) references person,
+  6  foreign key(year) references income_info);
+
+Table created.
+
+SQL> create table filing_status(
+  2  ssn number(10),
+  3  year number
+  4  
+SQL> alter table tax_payment add constraint pk_tax primary key(ssn);
+
+Table altered.
+
+SQL> create table filing_status(
+  2  ssn number(10),
+  3  year number(4),
+  4  status varchar2(10),
+  5  constraint pk_fil primary key(ssn,year),
+  6  foreign key(ssn) references person,
+  7  foreign key(year) references year);
+foreign key(year) references year)
+                             *
+ERROR at line 7:
+ORA-00942: table or view does not exist 
+
+
+SQL> create table filing_status(
+  2  ssn number(10),
+  3  year number(4),
+  4  status varchar2(10),
+  5  constraint pk_fil primary key(ssn,year),
+  6  foreign key(ssn) references person,
+  7  foreign key(year) references income_info);
+
+Table created.
+
+SQL> create table audit_info(
+  2  ssn number(10),
+  3  year number(4),
+  4  result varchar2(10),
+  5  constraint pk_aud primary key(ssn,year),
+  6  foreign key(ssn) refernces person,
+  7  foreign key(year) refernces income_info);
+foreign key(ssn) refernces person,
+                 *
+ERROR at line 6:
+ORA-00905: missing keyword 
+
+
+SQL> create table audit_info(
+  2  ssn number(10),
+  3  year number(4),
+  4  result varchar2(10),
+  5  constraint pk_aud primary key(ssn,year),
+  6  foreign key(ssn) references person,
+  7  foreign key(year) refernces income_info);
+foreign key(year) refernces income_info)
+                  *
+ERROR at line 7:
+ORA-00905: missing keyword 
+
+
+SQL> create table audit_info(
+  2  ssn number(10),
+  3  year number(4),
+  4  result varchar2(10),
+  5  constraint pk_aud primary key(ssn,year),
+  6  foreign key(ssn) references person,
+  7  foreign key(year) references income_info);
+
+Table created.
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'PERSON';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_SSN                         P                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'INCOME_INFO';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+SYS_C006988                    R                                                
+PK_INC                         P                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'TAX_PAYMENT';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+SYS_C006990                    R                                                
+SYS_C006991                    R                                                
+PK_TAX                         P                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'FILING_STATUS';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_FIL                         P                                                
+SYS_C006994                    R                                                
+SYS_C006995                    R                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'AUDIT_INFO';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_AUD                         P                                                
+SYS_C006997                    R                                                
+SYS_C006998                    R                                                
+
+SQL> desc tax_payment;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SSN                                       NOT NULL NUMBER(10)
+ YEAR                                               NUMBER(4)
+ AMOUNT                                             NUMBER(10)
+
+SQL> desc filing_status;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SSN                                       NOT NULL NUMBER(10)
+ YEAR                                      NOT NULL NUMBER(4)
+ STATUS                                             VARCHAR2(10)
+
+SQL> desc audit_info;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SSN                                       NOT NULL NUMBER(10)
+ YEAR                                      NOT NULL NUMBER(4)
+ RESULT                                             VARCHAR2(10)
+
+SQL> select * from tab;
+
+TNAME                          TABTYPE  CLUSTERID                               
+------------------------------ ------- ----------                               
+AUDIT_INFO                     TABLE                                            
+FILING_STATUS                  TABLE                                            
+INCOME_INFO                    TABLE                                            
+PERSON                         TABLE                                            
+TAX_PAYMENT                    TABLE                                            
+
+SQL> insert into person values (&ssn,'&name',&phone,'&eamil','&address');
+Enter value for ssn: 1100
+Enter value for name: prudhvi
+Enter value for phone: 6309825369
+Enter value for eamil: prudhvi2003@gmail.com
+Enter value for address: plot no.527,veena ram towers,bhagath singh nagar,kuktpally,hyd
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1100,'prudhvi',6309825369,'prudhvi2003@gmail.com','plot no.527,veena ram towers,bhagath singh nagar,kuktpally,hyd')
+insert into person values (1100,'prudhvi',6309825369,'prudhvi2003@gmail.com','plot no.527,veena ram towers,bhagath singh nagar,kuktpally,hyd')
+                                                     *
+ERROR at line 1:
+ORA-12899: value too large for column "PRUDHVI"."PERSON"."EMAIL" (actual: 21, 
+maximum: 20) 
+
+
+SQL> /
+Enter value for ssn: 
+Enter value for name: 
+Enter value for phone: 
+Enter value for eamil: 
+Enter value for address: 
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (,'',,'','')
+insert into person values (,'',,'','')
+                           *
+ERROR at line 1:
+ORA-00936: missing expression 
+
+
+SQL> insert into person values (&ssn,'&name',&phone,'&eamil','&address');
+Enter value for ssn: 1100
+Enter value for name: prudhvi
+Enter value for phone: 6309825369
+Enter value for eamil: prudhvi2003@gmail.com
+Enter value for address: plot no 527 kukatpally hyd
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1100,'prudhvi',6309825369,'prudhvi2003@gmail.com','plot no 527 kukatpally hyd')
+insert into person values (1100,'prudhvi',6309825369,'prudhvi2003@gmail.com','plot no 527 kukatpally hyd')
+                                                     *
+ERROR at line 1:
+ORA-12899: value too large for column "PRUDHVI"."PERSON"."EMAIL" (actual: 21, 
+maximum: 20) 
+
+
+SQL> +
+SP2-0042: unknown command "+" - rest of line ignored.
+SQL> alter table person
+  2  modify (email varchar2(40));
+
+Table altered.
+
+SQL> insert into person values (&ssn,'&name',&phone,'&eamil','&address');
+Enter value for ssn: 1100
+Enter value for name: prudhvi
+Enter value for phone: 6309825369
+Enter value for eamil: prudhvi2003@gmail.com
+Enter value for address: plot no 527 kukatpally hyd
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1100,'prudhvi',6309825369,'prudhvi2003@gmail.com','plot no 527 kukatpally hyd')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1101
+Enter value for name: anurag
+Enter value for phone: 8919552101
+Enter value for eamil: anurag@gmai.com
+Enter value for address: plot no 123,chikadapally,secundrabad
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1101,'anurag',8919552101,'anurag@gmai.com','plot no 123,chikadapally,secundrabad')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1102
+Enter value for name: anish
+Enter value for phone: 6303740135
+Enter value for eamil: anish@gmail.com
+Enter value for address: plot no 558,kollur,shankarpally
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1102,'anish',6303740135,'anish@gmail.com','plot no 558,kollur,shankarpally')
+
+1 row created.
+
+SQL> 1103
+SP2-0226: Invalid line number 
+SQL> /
+Enter value for ssn: 1103
+Enter value for name: shruthi
+Enter value for phone: 9328945636
+Enter value for eamil: shruthi@gmail.com
+Enter value for address: plot no 662,saroornagar,hyd
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1103,'shruthi',9328945636,'shruthi@gmail.com','plot no 662,saroornagar,hyd')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1104
+Enter value for name: shriya
+Enter value for phone: 7894561230
+Enter value for eamil: shriya@gmail.com
+Enter value for address: plot no 990,attapur,hyd
+old   1: insert into person values (&ssn,'&name',&phone,'&eamil','&address')
+new   1: insert into person values (1104,'shriya',7894561230,'shriya@gmail.com','plot no 990,attapur,hyd')
+
+1 row created.
+
+SQL> select * from person;
+
+       SSN NAME                      PHONE                                      
+---------- -------------------- ----------                                      
+EMAIL                                                                           
+----------------------------------------                                        
+ADDRESS                                                                         
+--------------------------------------------------                              
+      1100 prudhvi              6309825369                                      
+prudhvi2003@gmail.com                                                           
+plot no 527 kukatpally hyd                                                      
+                                                                                
+      1101 anurag               8919552101                                      
+anurag@gmai.com                                                                 
+plot no 123,chikadapally,secundrabad                                            
+
+       SSN NAME                      PHONE                                      
+---------- -------------------- ----------                                      
+EMAIL                                                                           
+----------------------------------------                                        
+ADDRESS                                                                         
+--------------------------------------------------                              
+                                                                                
+      1102 anish                6303740135                                      
+anish@gmail.com                                                                 
+plot no 558,kollur,shankarpally                                                 
+                                                                                
+      1103 shruthi              9328945636                                      
+shruthi@gmail.com                                                               
+
+       SSN NAME                      PHONE                                      
+---------- -------------------- ----------                                      
+EMAIL                                                                           
+----------------------------------------                                        
+ADDRESS                                                                         
+--------------------------------------------------                              
+plot no 662,saroornagar,hyd                                                     
+                                                                                
+      1104 shriya               7894561230                                      
+shriya@gmail.com                                                                
+plot no 990,attapur,hyd                                                         
+                                                                                
+
+SQL> insert into income_info values(&ssn,&year,&salary,&bonus,&interest);
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for salary: 1500000
+Enter value for bonus: 300000
+Enter value for interest: 200000
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1100,2019,1500000,300000,200000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1100
+Enter value for year: 2020
+Enter value for salary: 1800000
+Enter value for bonus: 500000
+Enter value for interest: 300000
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1100,2020,1800000,500000,300000)
+insert into income_info values(1100,2020,1800000,500000,300000)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (PRUDHVI.PK_INC) violated 
+
+
+SQL> alter table income_info drop constraint pk_inc;
+alter table income_info drop constraint pk_inc
+                                        *
+ERROR at line 1:
+ORA-02273: this unique/primary key is referenced by some foreign keys 
+
+
+SQL> /
+alter table income_info drop constraint pk_inc
+                                        *
+ERROR at line 1:
+ORA-02273: this unique/primary key is referenced by some foreign keys 
+
+
+SQL> insert into income_info values(&ssn,&year,&salary,&bonus,&interest);
+Enter value for ssn: 1101
+Enter value for year: 2019
+Enter value for salary: 1200000
+Enter value for bonus: 200000
+Enter value for interest: 100000
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1101,2019,1200000,200000,100000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1102
+Enter value for year: 2019
+Enter value for salary: 800000
+Enter value for bonus: 200000
+Enter value for interest: 200000
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1102,2019,800000,200000,200000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1103
+Enter value for year: 2000000
+Enter value for salary: 
+Enter value for bonus: 
+Enter value for interest: 
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1103,2000000,,,)
+insert into income_info values(1103,2000000,,,)
+                                            *
+ERROR at line 1:
+ORA-00936: missing expression 
+
+
+SQL> /
+Enter value for ssn: 1103
+Enter value for year: 2019
+Enter value for salary: 2000000
+Enter value for bonus: 500000
+Enter value for interest: 600000
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1103,2019,2000000,500000,600000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1104
+Enter value for year: 2019
+Enter value for salary: 1800000
+Enter value for bonus: 200000
+Enter value for interest: 50000
+old   1: insert into income_info values(&ssn,&year,&salary,&bonus,&interest)
+new   1: insert into income_info values(1104,2019,1800000,200000,50000)
+
+1 row created.
+
+SQL> select * from income_info;
+
+       SSN       YEAR     SALARY      BONUS   INTEREST                          
+---------- ---------- ---------- ---------- ----------                          
+      1100       2019    1500000     300000     200000                          
+      1101       2019    1200000     200000     100000                          
+      1102       2019     800000     200000     200000                          
+      1103       2019    2000000     500000     600000                          
+      1104       2019    1800000     200000      50000                          
+
+SQL> insert into tax_payment values(&ssn,&year,&amount);
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for amount: 300000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1100,2019,300000)
+insert into tax_payment values(1100,2019,300000)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (PRUDHVI.SYS_C006991) violated - parent key not 
+found 
+
+
+SQL> insert into tax_payment values(&ssn,&year,&amount);
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for amount: 20000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1100,2019,20000)
+insert into tax_payment values(1100,2019,20000)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (PRUDHVI.SYS_C006991) violated - parent key not 
+found 
+
+
+SQL> /
+Enter value for ssn: 1102
+Enter value for year: 2020
+Enter value for amount: 500000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1102,2020,500000)
+insert into tax_payment values(1102,2020,500000)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (PRUDHVI.SYS_C006991) violated - parent key not 
+found 
+
+
+SQL> insert into filing_status values(&ssn,&year,'&status');
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for status: single
+old   1: insert into filing_status values(&ssn,&year,'&status')
+new   1: insert into filing_status values(1100,2019,'single')
+insert into filing_status values(1100,2019,'single')
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (PRUDHVI.SYS_C006995) violated - parent key not 
+found 
+
+
+SQL> alter table tax_payment drop constraint foreign key;
+alter table tax_payment drop constraint foreign key
+                                                *
+ERROR at line 1:
+ORA-01735: invalid ALTER TABLE option 
+
+
+SQL> alter table tax_payment drop constraint SYS_C006990;
+
+Table altered.
+
+SQL> alter table tax_payment drop constraint SYS_C006991;
+
+Table altered.
+
+SQL> alter table tax_payment drop constraint SYS_C006994;
+alter table tax_payment drop constraint SYS_C006994
+                                        *
+ERROR at line 1:
+ORA-02443: Cannot drop constraint  - nonexistent constraint 
+
+
+SQL> alter table filing_status drop constraint SYS_C006994;
+
+Table altered.
+
+SQL> alter table filing_status drop constraint SYS_C006995;
+
+Table altered.
+
+SQL> alter table audit_info drop constraint SYS_C006997;
+
+Table altered.
+
+SQL> alter table audit_info drop constraint SYS_C006998;
+
+Table altered.
+
+SQL> insert into tax_payment values(&ssn,&year,&amount);
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for amount: 300000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1100,2019,300000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1100
+Enter value for year: 2023
+Enter value for amount: 350000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1100,2023,350000)
+insert into tax_payment values(1100,2023,350000)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (PRUDHVI.PK_TAX) violated 
+
+
+SQL> /
+Enter value for ssn: 1101
+Enter value for year: 2019
+Enter value for amount: 200000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1101,2019,200000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1102
+Enter value for year: 2020
+Enter value for amount: 
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1102,2020,)
+insert into tax_payment values(1102,2020,)
+                                         *
+ERROR at line 1:
+ORA-00936: missing expression 
+
+
+SQL> 
+SQL> /
+Enter value for ssn: 1102
+Enter value for year: 2019
+Enter value for amount: 500000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1102,2019,500000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1103
+Enter value for year: 2019
+Enter value for amount: 250000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1103,2019,250000)
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1104
+Enter value for year: 2019
+Enter value for amount: 200000
+old   1: insert into tax_payment values(&ssn,&year,&amount)
+new   1: insert into tax_payment values(1104,2019,200000)
+
+1 row created.
+
+SQL> insert into filing_status values(&ssn,&year,'&status');
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for status: single
+old   1: insert into filing_status values(&ssn,&year,'&status')
+new   1: insert into filing_status values(1100,2019,'single')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1101
+Enter value for year: 2019
+Enter value for status: couple
+old   1: insert into filing_status values(&ssn,&year,'&status')
+new   1: insert into filing_status values(1101,2019,'couple')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1102
+Enter value for year: 2019
+Enter value for status: business
+old   1: insert into filing_status values(&ssn,&year,'&status')
+new   1: insert into filing_status values(1102,2019,'business')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1103
+Enter value for year: 2019
+Enter value for status: single
+old   1: insert into filing_status values(&ssn,&year,'&status')
+new   1: insert into filing_status values(1103,2019,'single')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1104
+Enter value for year: 2019
+Enter value for status: family
+old   1: insert into filing_status values(&ssn,&year,'&status')
+new   1: insert into filing_status values(1104,2019,'family')
+
+1 row created.
+
+SQL> select * from filing_status;
+
+       SSN       YEAR STATUS                                                    
+---------- ---------- ----------                                                
+      1100       2019 single                                                    
+      1101       2019 couple                                                    
+      1102       2019 business                                                  
+      1103       2019 single                                                    
+      1104       2019 family                                                    
+
+SQL> insert into audit_info values(&ssn,&year,'&result');
+Enter value for ssn: 1100
+Enter value for year: 2019
+Enter value for result: success
+old   1: insert into audit_info values(&ssn,&year,'&result')
+new   1: insert into audit_info values(1100,2019,'success')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1101
+Enter value for year: 2019
+Enter value for result: success
+old   1: insert into audit_info values(&ssn,&year,'&result')
+new   1: insert into audit_info values(1101,2019,'success')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1103
+Enter value for year: 2019
+Enter value for result: success
+old   1: insert into audit_info values(&ssn,&year,'&result')
+new   1: insert into audit_info values(1103,2019,'success')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1104
+Enter value for year: 2019
+Enter value for result: success
+old   1: insert into audit_info values(&ssn,&year,'&result')
+new   1: insert into audit_info values(1104,2019,'success')
+
+1 row created.
+
+SQL> /
+Enter value for ssn: 1102
+Enter value for year: 2019
+Enter value for result: failed
+old   1: insert into audit_info values(&ssn,&year,'&result')
+new   1: insert into audit_info values(1102,2019,'failed')
+
+1 row created.
+
+SQL> select * from audit_info;
+
+       SSN       YEAR RESULT                                                    
+---------- ---------- ----------                                                
+      1100       2019 success                                                   
+      1101       2019 success                                                   
+      1103       2019 success                                                   
+      1104       2019 success                                                   
+      1102       2019 failed                                                    
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'PERSON';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_SSN                         P                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'INCOME_INFO';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+SYS_C006988                    R                                                
+PK_INC                         P                                                
+
+SQL> alter table income_info drop constraint pk_inc;
+
+Table altered.
+
+SQL> alter table income_info drop constraint SYS_C006988;
+
+Table altered.
+
+SQL> alter table add constraint pk_inc primary key(ssn,year);
+alter table add constraint pk_inc primary key(ssn,year)
+            *
+ERROR at line 1:
+ORA-00903: invalid table name 
+
+
+SQL> alter table income_info add constraint pk_inc primary key(ssn,year);
+
+Table altered.
+
+SQL> alter table income_info add foreign key(ssn) references person(fk_inc);
+alter table income_info add foreign key(ssn) references person(fk_inc)
+                                                               *
+ERROR at line 1:
+ORA-00904: "FK_INC": invalid identifier 
+
+
+SQL> alter table income_info add foreign key(ssn) references person;
+
+Table altered.
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'TAX_PAYMENT';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_TAX                         P                                                
+
+SQL> alter table tax_payment drop constraint pk_tax;
+
+Table altered.
+
+SQL> alter table tax_payment add constraint pk_tax primary key(ssn,year);
+
+Table altered.
+
+SQL> alter table tax_payment add foreign key(ssn) references person;
+
+Table altered.
+
+SQL> alter table tax_payment add foreign key(year) references income_info;
+alter table tax_payment add foreign key(year) references income_info
+                                                         *
+ERROR at line 1:
+ORA-02256: number of referencing columns must match referenced columns 
+
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'FILING_STATUS';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_FIL                         P                                                
+
+SQL> alter table tax_payment drop constraint pk_fil;
+alter table tax_payment drop constraint pk_fil
+                                        *
+ERROR at line 1:
+ORA-02443: Cannot drop constraint  - nonexistent constraint 
+
+
+SQL> alter table filing_status drop constraint pk_fil;
+
+Table altered.
+
+SQL> alter table tax_payment add constraint pk_fil primary key(ssn,year);
+alter table tax_payment add constraint pk_fil primary key(ssn,year)
+                                              *
+ERROR at line 1:
+ORA-02260: table can have only one primary key 
+
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'FILING_STATUS';
+
+no rows selected
+
+SQL> alter table tax_payment add constraint pk_fil primary key(ssn,year);
+alter table tax_payment add constraint pk_fil primary key(ssn,year)
+                                              *
+ERROR at line 1:
+ORA-02260: table can have only one primary key 
+
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'FILING_STATUS';
+
+no rows selected
+
+SQL> alter table filing_status add constraint pk_fil primary key(ssn,year);
+
+Table altered.
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'AUDIT_INFO';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_AUD                         P                                                
+
+SQL> alter table audit_info drop constraint pk_aud;
+
+Table altered.
+
+SQL> alter table audit_info add constraint pk_aud primary key(ssn,year);
+
+Table altered.
+
+SQL> alter table filing_status dd foreign key(ssn) references person;
+alter table filing_status dd foreign key(ssn) references person
+                          *
+ERROR at line 1:
+ORA-01735: invalid ALTER TABLE option 
+
+
+SQL> alter table filing_status add foreign key(ssn) references person;
+
+Table altered.
+
+SQL> alter table audit_info add foreign key(ssn) references person;
+
+Table altered.
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'AUDIT_INFO';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_AUD                         P                                                
+SYS_C007006                    R                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'FILING_STATUS';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_FIL                         P                                                
+SYS_C007005                    R                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'TAX_PAYMENT';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_TAX                         P                                                
+SYS_C007002                    R                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'INCOME_INFO';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_INC                         P                                                
+SYS_C007000                    R                                                
+
+SQL> select constraint_name,constraint_type from user_constraints where table_name = 'PERSON';
+
+CONSTRAINT_NAME                C                                                
+------------------------------ -                                                
+PK_SSN                         P                                                
+
+SQL> SPOOL OFF
